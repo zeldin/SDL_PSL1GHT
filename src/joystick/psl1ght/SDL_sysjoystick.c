@@ -31,6 +31,7 @@
 #include "../SDL_joystick_c.h"
 
 #include <io/pad.h>
+#include <math.h>
 
 #define pdprintf(x) printf(x)
 
@@ -134,9 +135,12 @@ SDL_SYS_JoystickOpen(SDL_Joystick * joystick)
     return 0;
 }
 
+#define POW_128_2 16384
 #define CheckPSL1GHTAxis( btn, bnum) \
 	if( new_pad_data.btn != joystick->hwdata->old_pad_data.btn) {\
-		SDL_PrivateJoystickAxis( joystick, (bnum), (new_pad_data.btn-0x80)); \
+		Sint16 new_value = pow (new_pad_data.btn-0x80, 2) / POW_128_2 * 0x8000;     \
+		SDL_PrivateJoystickAxis( joystick, (bnum), \
+			new_pad_data.btn < 0x80 ? -new_value : new_value);      \
 	} \
 	joystick->hwdata->old_pad_data.btn = new_pad_data.btn;
 
