@@ -32,6 +32,7 @@
 #include "../fbcon/SDL_fbkeys.h"
 #include "SDL_PSL1GHTvideo.h"
 #include "SDL_PSL1GHTevents_c.h"
+#include "SDL_PSL1GHTmouse_c.h"
 
 #include <sysutil/sysutil.h>
 #include <io/kb.h>
@@ -90,7 +91,6 @@ SDL_Event PSL1GHT_Event;
 void
 PSL1GHT_PumpEvents(_THIS)
 {
-
 	do {
         posted = 0;
         /*mouse_update stuff goes here*/
@@ -100,7 +100,8 @@ PSL1GHT_PumpEvents(_THIS)
 
     } while (posted);
 	//SDL_ResetKeyboard();
-	sysUtilCheckCallback();
+    sysUtilCheckCallback();
+    PSL1GHT_PumpMouse(_this);
 }
 
 void PollKeyboard()
@@ -165,11 +166,13 @@ void PollKeyboard()
 void PSL1GHT_InitSysEvent(_THIS)
 {
     sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, eventHandle, _this);
+    PSL1GHT_InitMouse(_this);
 }
 
 void PSL1GHT_QuitSysEvent(_THIS)
 {
     sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
+    PSL1GHT_QuitMouse(_this);
 }
 
 void PSL1GHT_InitPSL1GHTKeymap(_THIS)
