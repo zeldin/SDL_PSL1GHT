@@ -1,1 +1,0 @@
-#define SDL_REVISION "e1fc4fc6318c0922d39d5b80c4a83d087e0f48f8"
