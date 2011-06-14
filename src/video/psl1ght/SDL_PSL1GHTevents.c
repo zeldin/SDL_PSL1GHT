@@ -94,14 +94,14 @@ PSL1GHT_PumpEvents(_THIS)
 	do {
         posted = 0;
 		/*Keyboard update stuff goes here*/
-		PollKeyboard();
+		PSL1GHT_PumpKeyboard();
 
     } while (posted);
     sysUtilCheckCallback();
     PSL1GHT_PumpMouse(_this);
 }
 
-void PollKeyboard()
+void PSL1GHT_PumpKeyboard()
 {
   KbData Keys;
   KbInfo kbinfo;

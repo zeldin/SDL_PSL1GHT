@@ -32,5 +32,5 @@ extern int PSL1GHT_initkeymaps(int fd);
                                int u1, int u2, int u3, int u4);*/
 extern void PSL1GHT_keyboardcallback(int scancode, int pressed);
 extern void PSL1GHT_InitPSL1GHTKeymap(_THIS);
-extern void PollKeyboard();
+extern void PSL1GHT_PumpKeyboard();
 /* vi: set ts=4 sw=4 expandtab: */
