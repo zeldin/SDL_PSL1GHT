@@ -117,7 +117,8 @@ void PollKeyboard()
 	if (ioKbRead(z,&Keys) == 0)
 	{
 		//reset keys if nothing is pressed
-		SDL_ResetKeyboard();
+		if (Keys.nb_keycode > 0)
+			SDL_ResetKeyboard();
 		//read Keys.
 		for (x=0;x<Keys.nb_keycode;x++)
 		{
