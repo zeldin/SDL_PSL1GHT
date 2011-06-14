@@ -93,74 +93,40 @@ PSL1GHT_PumpEvents(_THIS)
 {
 	do {
         posted = 0;
-        /*mouse_update stuff goes here*/
-
 		/*Keyboard update stuff goes here*/
 		PollKeyboard();
 
     } while (posted);
-	//SDL_ResetKeyboard();
     sysUtilCheckCallback();
     PSL1GHT_PumpMouse(_this);
 }
 
 void PollKeyboard()
 {
-	
   KbData Keys;
   KbInfo kbinfo;
-
   s32 ret;
   int x = 0, z =0;
 
   static int tmp = 1;
 
-  //if (ioKbInit 	(4))
-	//  printf("Error Initing Keyboard.\n");
-  //printf("Calling ioKbGetInfo() returned %d\r\n", ioKbGetInfo(&kbinfo));
-  //printf("KbInfo:\r\nMax Kbs: %u\r\nConnected Kbs: %u\r\nInfo Field: %08x\r\n", kbinfo.max, kbinfo.connected, kbinfo.info);
-
-      
-	  for (z=0; z<4;z++)
-	  {
-		//set raw keyboard code types to get scan codes
-
-		ret = ioKbSetCodeType (z, KB_CODETYPE_RAW);
-
-		if (ioKbRead(z,&Keys) == 0)
+  for (z=0; z<4;z++)
+  {
+	//set raw keyboard code types to get scan codes
+	ret = ioKbSetCodeType (z, KB_CODETYPE_RAW);
+	if (ioKbRead(z,&Keys) == 0)
+	{
+		//reset keys if nothing is pressed
+		SDL_ResetKeyboard();
+		//read Keys.
+		for (x=0;x<Keys.nb_keycode;x++)
 		{
-			//reset keys if nothing is pressed
-			if (Keys.nb_keycode > 0)
-				SDL_ResetKeyboard();
-			//read Keys.
-			for (x=0;x<Keys.nb_keycode;x++)
-			{
-				printf("got Keys... pass: %d keyboard: %d - KeyCode: %d\n",x, z, Keys.keycode[x]);
-				
-				//static SDL_keysym *TranslateKey(int scancode, SDL_keysym * keysym)
-				//int SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
-				//int SDL_SendKeyboardText(const char *text)
-				
-				//ret = SDL_SendKeyboardKey(SDL_KEYDOWN, (SDL_scancode) 4);//Keys.keycode[x]);
-				
-				//if (tmp==1)
-				//{
-				//	ret = SDL_SendKeyboardKey(SDL_PRESSED, (SDL_scancode)SDL_SCANCODE_A);
-				if (Keys.keycode[x] != 0)
-					ret = SDL_SendKeyboardKey(SDL_PRESSED, (SDL_scancode) (Keys.keycode[x] ));
-				//}
-				//else 
-				//{
-				//	ret = SDL_SendKeyboardKey(SDL_PRESSED, (SDL_scancode)SDL_SCANCODE_B);
-				//}
-				//tmp = !tmp;
-				
-				if (Keys.keycode[x] == 10 )
-					return 0;
-			}
+			printf("got Keys... pass: %d keyboard: %d - KeyCode: %d\n",x, z, Keys.keycode[x]);
+			if (Keys.keycode[x] != 0)
+				ret = SDL_SendKeyboardKey(SDL_PRESSED, (SDL_scancode) (Keys.keycode[x] ));
 		}
-	  }
-
+	}
+  }
 }
 
 void PSL1GHT_InitSysEvent(_THIS)
