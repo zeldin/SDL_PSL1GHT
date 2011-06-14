@@ -29,13 +29,16 @@
 #include <rsx/rsx.h>
 #include <sysutil/video.h>
 
+/* Hidden "this" pointer for the video functions */
+
+
 /* Debugging
  * 0: No debug messages
  * 1: Video debug messages
  * 2: SPE debug messages
  * 3: Memory adresses
  */
-#define VIDEO_DEBUG_LEVEL 3
+#define VIDEO_DEBUG_LEVEL 0
 
 #ifdef VIDEO_DEBUG_LEVEL
 #define deprintf( level, fmt, args... ) \

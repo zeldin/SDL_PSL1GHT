@@ -509,7 +509,8 @@ static const char *SDL_scancode_names[SDL_NUM_SCANCODES] = {
 static char *
 SDL_UCS4ToUTF8(Uint32 ch, char *dst)
 {
-    Uint8 *p = (Uint8 *) dst;
+    printf("in SDL_UCS4ToUTF8\n");
+	Uint8 *p = (Uint8 *) dst;
     if (ch <= 0x7F) {
         *p = (Uint8) ch;
         ++dst;
@@ -551,7 +552,8 @@ SDL_UCS4ToUTF8(Uint32 ch, char *dst)
 int
 SDL_KeyboardInit(void)
 {
-    SDL_Keyboard *keyboard = &SDL_keyboard;
+   printf("in SDL_KeyboardInit\n");
+   SDL_Keyboard *keyboard = &SDL_keyboard;
 
     /* Set the default keymap */
     SDL_memcpy(keyboard->keymap, SDL_default_keymap, sizeof(SDL_default_keymap));
@@ -561,7 +563,8 @@ SDL_KeyboardInit(void)
 void
 SDL_ResetKeyboard(void)
 {
-    SDL_Keyboard *keyboard = &SDL_keyboard;
+    printf("in SDL_KeyboardReset\n");
+	SDL_Keyboard *keyboard = &SDL_keyboard;
     SDL_scancode scancode;
 
     for (scancode = 0; scancode < SDL_NUM_SCANCODES; ++scancode) {
@@ -574,13 +577,15 @@ SDL_ResetKeyboard(void)
 void
 SDL_GetDefaultKeymap(SDLKey * keymap)
 {
-    SDL_memcpy(keymap, SDL_default_keymap, sizeof(SDL_default_keymap));
+	printf("in SDL_GetDefaultKeyMap\n");
+	SDL_memcpy(keymap, SDL_default_keymap, sizeof(SDL_default_keymap));
 }
 
 void
 SDL_SetKeymap(int start, SDLKey * keys, int length)
 {
-    SDL_Keyboard *keyboard = &SDL_keyboard;
+    printf("in SDL_SetKeyMap\n");
+	SDL_Keyboard *keyboard = &SDL_keyboard;
 
     if (start < 0 || start + length > SDL_NUM_SCANCODES) {
         return;
@@ -592,14 +597,15 @@ SDL_SetKeymap(int start, SDLKey * keys, int length)
 void
 SDL_SetScancodeName(SDL_scancode scancode, const char *name)
 {
-    SDL_scancode_names[scancode] = name;
+    printf("in SDL_SetScanCodeName\n");
+	SDL_scancode_names[scancode] = name;
 }
 
 SDL_Window *
 SDL_GetKeyboardFocus(void)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
-
+	printf("in SDL_GetKeyboardFocus.\n");
     return keyboard->focus;
 }
 
@@ -608,6 +614,7 @@ SDL_SetKeyboardFocus(SDL_Window * window)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
 
+	printf("in SDL_SetKeyboardFocus\n");
     /* See if the current window has lost focus */
     if (keyboard->focus && keyboard->focus != window) {
         SDL_SendWindowEvent(keyboard->focus, SDL_WINDOWEVENT_FOCUS_LOST,
@@ -640,13 +647,15 @@ SDL_SetKeyboardFocus(SDL_Window * window)
 int
 SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
 {
-    SDL_Keyboard *keyboard = &SDL_keyboard;
+    printf("in SDL_SendKeyboardKey.\n");
+	SDL_Keyboard *keyboard = &SDL_keyboard;
     int posted;
     Uint16 modstate;
     Uint32 type;
     Uint8 repeat;
 
     if (!scancode) {
+		printf("!scancode, returning 0\n");
         return 0;
     }
 #if 0
@@ -654,7 +663,8 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
            state == SDL_PRESSED ? "pressed" : "released");
 #endif
     if (state == SDL_PRESSED) {
-        modstate = keyboard->modstate;
+        printf("Key Pressed State...\n");
+		modstate = keyboard->modstate;
         switch (scancode) {
         case SDL_SCANCODE_NUMLOCKCLEAR:
             keyboard->modstate ^= KMOD_NUM;
@@ -690,9 +700,11 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
             keyboard->modstate |= KMOD_MODE;
             break;
         default:
-            break;
+            printf("Nothing matched\n");
+			break;
         }
     } else {
+		printf("in switch scancode...%d\n", scancode);
         switch (scancode) {
         case SDL_SCANCODE_NUMLOCKCLEAR:
         case SDL_SCANCODE_CAPSLOCK:
@@ -725,22 +737,27 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
             keyboard->modstate &= ~KMOD_MODE;
             break;
         default:
-            break;
+            printf("WTF?\n");
+			break;
         }
         modstate = keyboard->modstate;
+		printf("modstate = %d\n",modstate);
     }
 
     /* Figure out what type of event this is */
     switch (state) {
+		printf("switch(state)\n");
     case SDL_PRESSED:
-        type = SDL_KEYDOWN;
+        printf("case SDL_PRESSED:\n");
+		type = SDL_KEYDOWN;
         break;
     case SDL_RELEASED:
         type = SDL_KEYUP;
         break;
     default:
         /* Invalid state -- bail */
-        return 0;
+        printf("invalid state\n");
+		return 0;
     }
 
     /* Drop events that don't change state */
@@ -758,7 +775,8 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
     /* Post the event, if desired */
     posted = 0;
     if (SDL_GetEventState(type) == SDL_ENABLE) {
-        SDL_Event event;
+        printf("(SDL_GetEventState(type) == SDL_ENABLE)\n");
+		SDL_Event event;
         event.key.type = type;
         event.key.state = state;
         event.key.repeat = repeat;
@@ -769,7 +787,8 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
         event.key.windowID = keyboard->focus ? keyboard->focus->id : 0;
         posted = (SDL_PushEvent(&event) > 0);
     }
-    return (posted);
+    printf("returning posted.\n");
+	return (posted);
 }
 
 int
@@ -777,7 +796,7 @@ SDL_SendKeyboardText(const char *text)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
     int posted;
-
+	printf("in SDL_SendKeyboardText.\n");
     /* Don't post text events for unprintable characters */
     if ((unsigned char)*text < ' ' || *text == 127) {
         return 0;
@@ -802,6 +821,7 @@ SDL_SendEditingText(const char *text, int start, int length)
     SDL_Keyboard *keyboard = &SDL_keyboard;
     int posted;
 
+	printf("in SDL_SendEditingText.\n");
     /* Post the event, if desired */
     posted = 0;
     if (SDL_GetEventState(SDL_TEXTEDITING) == SDL_ENABLE) {
@@ -819,12 +839,15 @@ SDL_SendEditingText(const char *text, int start, int length)
 void
 SDL_KeyboardQuit(void)
 {
+	printf("in SDL_KeyboardQuit.\n");
 }
 
 Uint8 *
 SDL_GetKeyboardState(int *numkeys)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
+
+	printf("in SDL_GetKeyboardState.\n");
 
     if (numkeys != (int *) 0) {
         *numkeys = SDL_NUM_SCANCODES;
@@ -837,6 +860,8 @@ SDL_GetModState(void)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
 
+	printf("in SDL_GetModState.\n");
+
     return keyboard->modstate;
 }
 
@@ -844,6 +869,8 @@ void
 SDL_SetModState(SDLMod modstate)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
+
+	printf("in SDL_SetModState.\n");
 
     keyboard->modstate = modstate;
 }
@@ -853,6 +880,8 @@ SDL_GetKeyFromScancode(SDL_scancode scancode)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
 
+	printf("in SDL_GetKeyFromScancode.\n");
+
     return keyboard->keymap[scancode];
 }
 
@@ -861,6 +890,8 @@ SDL_GetScancodeFromKey(SDLKey key)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
     SDL_scancode scancode;
+
+	printf("in SDL_GetScancodeFromKey.\n");
 
     for (scancode = SDL_SCANCODE_UNKNOWN; scancode < SDL_NUM_SCANCODES;
          ++scancode) {
@@ -876,6 +907,8 @@ SDL_GetScancodeName(SDL_scancode scancode)
 {
     const char *name = SDL_scancode_names[scancode];
 
+	printf("in SDL_GetScancodeName.\n");
+
     if (name)
         return name;
     else
@@ -887,6 +920,8 @@ SDL_GetKeyName(SDLKey key)
 {
     static char name[8];
     char *end;
+
+	printf("in SDL_GetKeyName.\n");
 
     if (key & SDLK_SCANCODE_MASK) {
         return
@@ -920,5 +955,16 @@ SDL_GetKeyName(SDLKey key)
         return name;
     }
 }
+
+/*SDL_scancode
+SDL_GetScancodeFromASCII(uint8 ASCII)
+{
+	int x;
+
+	for (x=0; x<SDL_NUM_SCANCODES;x++)
+	{
+		if toascii(
+	}
+*/
 
 /* vi: set ts=4 sw=4 expandtab: */

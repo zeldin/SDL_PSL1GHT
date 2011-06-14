@@ -28,6 +28,7 @@
  *  SDL video driver.  Renamed to "DUMMY" by Sam Lantinga.
  */
 
+#include "SDL_config.h"
 #include "SDL_video.h"
 #include "SDL_mouse.h"
 #include "../SDL_sysvideo.h"
@@ -65,7 +66,7 @@ PSL1GHT_Available(void)
 static void
 PSL1GHT_DeleteDevice(SDL_VideoDevice * device)
 {
-    printf( "PSL1GHT_DeleteDevice( %16X)\n", device);
+    deprintf (1, "PSL1GHT_DeleteDevice( %16X)\n", device);
     SDL_free(device);
 }
 
@@ -73,7 +74,7 @@ static SDL_VideoDevice *
 PSL1GHT_CreateDevice(int devindex)
 {
     SDL_VideoDevice *device;
-    printf( "PSL1GHT_CreateDevice( %16X)\n", devindex);
+    deprintf (1, "PSL1GHT_CreateDevice( %16X)\n", devindex);
 
     /* Initialize all variables that we clean on shutdown */
     device = (SDL_VideoDevice *) SDL_calloc(1, sizeof(SDL_VideoDevice));
@@ -91,7 +92,10 @@ PSL1GHT_CreateDevice(int devindex)
     device->VideoQuit = PSL1GHT_VideoQuit;
     device->SetDisplayMode = PSL1GHT_SetDisplayMode;
     device->GetDisplayModes = PSL1GHT_GetDisplayModes;
-    device->PumpEvents = PSL1GHT_PumpEvents;
+
+	//device->InitOSKeymap = PSL1GHT_InitPSL1GHTKeymap;
+
+	device->PumpEvents = PSL1GHT_PumpEvents;
 
     device->free = PSL1GHT_DeleteDevice;
 
@@ -106,7 +110,9 @@ VideoBootStrap PSL1GHT_bootstrap = {
 int
 PSL1GHT_VideoInit(_THIS)
 {
-    SDL_DisplayMode mode;
+    int keyboard;
+
+	SDL_DisplayMode mode;
     SDL_DeviceData *devdata = NULL;
 
     devdata = (SDL_DeviceData*) SDL_calloc(1, sizeof(SDL_DeviceData));
@@ -128,6 +134,22 @@ PSL1GHT_VideoInit(_THIS)
 
     gcmSetFlipMode(GCM_FLIP_VSYNC); // Wait for VSYNC to flip
 
+    /* Enable mouse and keyboard support */
+    printf("*****initing keyboard.*****\n");
+    keyboard = ioKbInit(4); /*Init the PS3 Keyboard*/
+    if (keyboard != 0) {
+        SDL_SetError("Unable to initialize keyboard\n");
+        return (-1);
+    }
+	else
+	{
+		printf("PSL1GHT Keyboard initialized.\n");
+	}
+    if (PSL1GHT_initkeymaps(keyboard) < 0) {
+        return (-1);
+    }
+    //keyboard_seteventhandler(PSL1GHT_keyboardcallback); // where does keyboard_seteventhandler come from?
+
     /* We're done! */
     return 0;
 }
@@ -135,7 +157,7 @@ PSL1GHT_VideoInit(_THIS)
 void
 PSL1GHT_VideoQuit(_THIS)
 {
-    printf("PSL1GHT_VideoQuit()\n");
+    deprintf (1, "PSL1GHT_VideoQuit()\n");
     PSL1GHT_QuitModes(_this);
     PSL1GHT_QuitSysEvent(_this);
     SDL_free( _this->driverdata);
@@ -144,7 +166,7 @@ PSL1GHT_VideoQuit(_THIS)
 
 void initializeGPU( SDL_DeviceData * devdata)
 {
-    printf("initializeGPU()\n");
+    deprintf (1, "initializeGPU()\n");
    // Allocate a 1Mb buffer, alligned to a 1Mb boundary to be our shared IO memory with the RSX.
     void *host_addr = memalign(1024*1024, 1024*1024);
     assert(host_addr != NULL);
