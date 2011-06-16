@@ -133,46 +133,51 @@ void PSL1GHT_PumpKeyboard()
 		/* Left Shift */
 		if (Keys.mkey._KbMkeyU._KbMkeyS.l_shift == 1)
 		{
-			//ret = SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT);
-			printf("Left Shift Pressed\n");
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 			keyboard->modstate = keyboard->modstate | ~(1<<1);
 			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT, keyboard->modstate);
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		else if (Keys.mkey._KbMkeyU._KbMkeyS.l_shift == 0)
 		{
-			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 			keyboard->modstate = keyboard->modstate & 1<<1;
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		
 		/* Right Shift */
 		if (Keys.mkey._KbMkeyU._KbMkeyS.r_shift == 1)
 		{
-			//ret = SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT);
-			printf("Right Shift Pressed.\n");
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 			keyboard->modstate = keyboard->modstate | ~(1<<5);
 			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_RSHIFT, keyboard->modstate);
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		else if (Keys.mkey._KbMkeyU._KbMkeyS.r_shift == 1)
 		{
-			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
 			keyboard->modstate = keyboard->modstate & 1<<5;
-			//printf("Events: Modstate: %d\n", keyboard->modstate);
+		}
+
+		//not tested
+
+		/* Left Control */
+		if (Keys.mkey._KbMkeyU._KbMkeyS.l_ctrl == 1)
+		{
+			keyboard->modstate = keyboard->modstate | ~(1<<0);
+			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LCTRL, keyboard->modstate);
+		}
+		else if (Keys.mkey._KbMkeyU._KbMkeyS.l_ctrl == 1)
+		{
+			keyboard->modstate = keyboard->modstate & 1<<0;
+		}
+
+		/* Right Control */
+		if (Keys.mkey._KbMkeyU._KbMkeyS.r_ctrl == 1)
+		{
+			keyboard->modstate = keyboard->modstate | ~(1<<4);
+			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_RCTRL, keyboard->modstate);
+		}
+		else if (Keys.mkey._KbMkeyU._KbMkeyS.r_ctrl == 1)
+		{
+			keyboard->modstate = keyboard->modstate & 1<<4;
 		}
 
 
-		/*
-		case SDL_SCANCODE_LSHIFT:
-            keyboard->modstate |= KMOD_LSHIFT;
-            break;
-		*/
-        
+		//end not tested
 
 		/*
 		case SDL_SCANCODE_LCTRL:
@@ -180,9 +185,6 @@ void PSL1GHT_PumpKeyboard()
             break;
         case SDL_SCANCODE_RCTRL:
             keyboard->modstate |= KMOD_RCTRL;
-            break;
-        case SDL_SCANCODE_RSHIFT:
-            keyboard->modstate |= KMOD_RSHIFT;
             break;
         case SDL_SCANCODE_LALT:
             keyboard->modstate |= KMOD_LALT;
