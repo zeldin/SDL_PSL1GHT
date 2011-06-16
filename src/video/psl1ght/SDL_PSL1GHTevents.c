@@ -85,8 +85,8 @@ static void eventHandle(u64 status, u64 param, void * userdata) {
     }
 }
 
-SDL_KeyboardEvent PSL1GHT_KeyboardEvent;
-SDL_Event PSL1GHT_Event;
+//SDL_KeyboardEvent PSL1GHT_KeyboardEvent;
+//SDL_Event PSL1GHT_Event;
 
 void
 PSL1GHT_PumpEvents(_THIS)
@@ -123,8 +123,8 @@ void PSL1GHT_PumpKeyboard()
 	if (ioKbRead(z,&Keys) == 0)
 	{
 		//reset keys if nothing is pressed
-	//	if (Keys.nb_keycode > 0)
-		//	SDL_ResetKeyboard();
+		if (Keys.nb_keycode > 0)
+			SDL_ResetKeyboard();
 		//read Keys.
 		
 
@@ -136,14 +136,15 @@ void PSL1GHT_PumpKeyboard()
 			//ret = SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT);
 			printf("Left Shift Pressed\n");
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
-			keyboard->modstate = keyboard->modstate | 1<<1;
+			keyboard->modstate = keyboard->modstate | ~(1<<1);
+			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT, keyboard->modstate);
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		else
 		{
 			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
-			keyboard->modstate = keyboard->modstate & 1<<1;
+			//keyboard->modstate = keyboard->modstate & 1<<1;
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		
