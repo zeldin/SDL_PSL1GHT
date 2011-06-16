@@ -60,6 +60,24 @@ extern int SDL_SendEditingText(const char *text, int start, int end);
 /* Shutdown the keyboard subsystem */
 extern void SDL_KeyboardQuit(void);
 
+/* Send a PSL1GHT keyboard key event */
+extern int PSLIGHT_SendKeyboardKey(Uint8 state, SDL_scancode scancode, Uint16 modstate);
+
+/* Global keyboard information */
+typedef struct SDL_Keyboard SDL_Keyboard;
+
+static SDL_Keyboard SDL_keyboard;
+
+struct SDL_Keyboard
+{
+    /* Data common to all keyboards */
+    SDL_Window *focus;
+    Uint16 modstate;
+    Uint8 keystate[SDL_NUM_SCANCODES];
+    SDLKey keymap[SDL_NUM_SCANCODES];
+};
+
+
 #endif /* _SDL_keyboard_c_h */
 
 /* vi: set ts=4 sw=4 expandtab: */

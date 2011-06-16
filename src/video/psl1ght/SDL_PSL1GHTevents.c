@@ -37,11 +37,11 @@
 #include <sysutil/sysutil.h>
 #include <io/kb.h>
 
-/* Not sure if these are defined elsewhere 
-#define KG_CAPSSHIFT    8
-#define NR_KEYS         128
-#define KTYP(x)         ((x) >> 8)
-#define KT_LETTER       11 */     /* symbol that can be acted upon by CapsLock */
+#include "SDL_timer.h"
+#include "SDL_events.h"
+#include "../../events/SDL_events_c.h"
+#include "../../events/SDL_sysevents.h"
+
 #include "keyboard.h"
 
 #define NUM_PSL1GHTKEYMAPS	(1<<KG_CAPSSHIFT)
@@ -101,34 +101,112 @@ PSL1GHT_PumpEvents(_THIS)
     PSL1GHT_PumpMouse(_this);
 }
 
+
 void PSL1GHT_PumpKeyboard()
 {
+  //SDL_Keyboard *keyboard = &SDL_keyboard;
   KbData Keys;
   KbInfo kbinfo;
+  //KbMkey mKey;
+  SDL_Keyboard *keyboard = &SDL_keyboard;
+
+  keyboard->modstate = 0;
   s32 ret;
   int x = 0, z =0;
 
   static int tmp = 1;
 
-  for (z=0; z<4;z++)
+  for (z=0; z<1;z++)
   {
 	//set raw keyboard code types to get scan codes
 	ret = ioKbSetCodeType (z, KB_CODETYPE_RAW);
 	if (ioKbRead(z,&Keys) == 0)
 	{
 		//reset keys if nothing is pressed
-		if (Keys.nb_keycode > 0)
-			SDL_ResetKeyboard();
+	//	if (Keys.nb_keycode > 0)
+		//	SDL_ResetKeyboard();
 		//read Keys.
+		
+
+		
+
+		/* Left Shift */
+		if (Keys.mkey._KbMkeyU._KbMkeyS.l_shift == 1)
+		{
+			//ret = SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT);
+			printf("Left Shift Pressed\n");
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+			keyboard->modstate = keyboard->modstate | 1<<1;
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+		}
+		else
+		{
+			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+			keyboard->modstate = keyboard->modstate & 1<<1;
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+		}
+		
+		/* Right Shift 
+		if (Keys.mkey._KbMkeyU._KbMkeyS.r_shift == 1)
+		{
+			//ret = SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT);
+			printf("Right Shift Pressed.\n");
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+			keyboard->modstate = keyboard->modstate | 1<<5;
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+		}
+		else
+		{
+			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+			keyboard->modstate = keyboard->modstate & 1<<5;
+			//printf("Events: Modstate: %d\n", keyboard->modstate);
+		}*/
+
+
+		/*
+		case SDL_SCANCODE_LSHIFT:
+            keyboard->modstate |= KMOD_LSHIFT;
+            break;
+		*/
+        
+
+		/*
+		case SDL_SCANCODE_LCTRL:
+            keyboard->modstate |= KMOD_LCTRL;
+            break;
+        case SDL_SCANCODE_RCTRL:
+            keyboard->modstate |= KMOD_RCTRL;
+            break;
+        case SDL_SCANCODE_RSHIFT:
+            keyboard->modstate |= KMOD_RSHIFT;
+            break;
+        case SDL_SCANCODE_LALT:
+            keyboard->modstate |= KMOD_LALT;
+            break;
+        case SDL_SCANCODE_RALT:
+            keyboard->modstate |= KMOD_RALT;
+            break;
+        case SDL_SCANCODE_LGUI:
+            keyboard->modstate |= KMOD_LGUI;
+            break;
+        case SDL_SCANCODE_RGUI:
+            keyboard->modstate |= KMOD_RGUI;
+            break;
+		*/
+
+
 		for (x=0;x<Keys.nb_keycode;x++)
 		{
-			printf("got Keys... pass: %d keyboard: %d - KeyCode: %d\n",x, z, Keys.keycode[x]);
+			printf("got Keys... pass: %d keyboard: %d - KeyCode: %d Modstate: %d\n",x, z, Keys.keycode[x],keyboard->modstate);
 			if (Keys.keycode[x] != 0)
-				ret = SDL_SendKeyboardKey(SDL_PRESSED, (SDL_scancode) (Keys.keycode[x] ));
+				ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, (SDL_scancode) (Keys.keycode[x] ), keyboard->modstate);
 		}
 	}
   }
 }
+
 
 void PSL1GHT_InitSysEvent(_THIS)
 {
