@@ -140,11 +140,11 @@ void PSL1GHT_PumpKeyboard()
 			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT, keyboard->modstate);
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
-		else
+		else if (Keys.mkey._KbMkeyU._KbMkeyS.l_shift == 0)
 		{
 			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
-			//keyboard->modstate = keyboard->modstate & 1<<1;
+			keyboard->modstate = keyboard->modstate & 1<<1;
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		
