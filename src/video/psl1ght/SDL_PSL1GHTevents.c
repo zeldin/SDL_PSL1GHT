@@ -148,22 +148,23 @@ void PSL1GHT_PumpKeyboard()
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
 		
-		/* Right Shift 
+		/* Right Shift */
 		if (Keys.mkey._KbMkeyU._KbMkeyS.r_shift == 1)
 		{
 			//ret = SDL_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_LSHIFT);
 			printf("Right Shift Pressed.\n");
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
-			keyboard->modstate = keyboard->modstate | 1<<5;
+			keyboard->modstate = keyboard->modstate | ~(1<<5);
+			ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, SDL_SCANCODE_RSHIFT, keyboard->modstate);
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 		}
-		else
+		else if (Keys.mkey._KbMkeyU._KbMkeyS.r_shift == 1)
 		{
 			//ret = SDL_SendKeyboardKey(SDL_RELEASED, SDL_SCANCODE_LSHIFT);
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
 			keyboard->modstate = keyboard->modstate & 1<<5;
 			//printf("Events: Modstate: %d\n", keyboard->modstate);
-		}*/
+		}
 
 
 		/*
