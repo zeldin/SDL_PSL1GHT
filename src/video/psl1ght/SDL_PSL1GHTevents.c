@@ -126,10 +126,6 @@ void PSL1GHT_PumpKeyboard()
 		if (Keys.nb_keycode > 0)
 			SDL_ResetKeyboard();
 		//read Keys.
-		
-
-		
-
 		/* Left Shift */
 		if (Keys.mkey._KbMkeyU._KbMkeyS.l_shift == 1)
 		{
@@ -152,8 +148,6 @@ void PSL1GHT_PumpKeyboard()
 			keyboard->modstate = keyboard->modstate & 1<<5;
 		}
 
-		//not tested
-
 		/* Left Control */
 		if (Keys.mkey._KbMkeyU._KbMkeyS.l_ctrl == 1)
 		{
@@ -175,7 +169,7 @@ void PSL1GHT_PumpKeyboard()
 		{
 			keyboard->modstate = keyboard->modstate & 1<<4;
 		}
-
+		//not tested
 
 		//end not tested
 
@@ -203,7 +197,6 @@ void PSL1GHT_PumpKeyboard()
 
 		for (x=0;x<Keys.nb_keycode;x++)
 		{
-			printf("got Keys... pass: %d keyboard: %d - KeyCode: %d Modstate: %d\n",x, z, Keys.keycode[x],keyboard->modstate);
 			if (Keys.keycode[x] != 0)
 				ret = PSLIGHT_SendKeyboardKey(SDL_PRESSED, (SDL_scancode) (Keys.keycode[x] ), keyboard->modstate);
 		}
