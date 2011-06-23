@@ -584,7 +584,8 @@ SDL_Window *
 SDL_GetKeyboardFocus(void)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
-    return keyboard->focus;
+
+	return keyboard->focus;
 }
 
 void
@@ -709,7 +710,7 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
             keyboard->modstate &= ~KMOD_MODE;
             break;
         default:
-			break;
+            break;
         }
         modstate = keyboard->modstate;
     }
