@@ -27,8 +27,6 @@ extern void PSL1GHT_PumpEvents(_THIS);
 extern void PSL1GHT_InitSysEvent(_THIS);
 extern void PSL1GHT_QuitSysEvent(_THIS);
 extern int PSL1GHT_initkeymaps(int fd);
-/*extern void PSL1GHT_mousecallback(int button, int dx, int dy,
-                               int u1, int u2, int u3, int u4);*/
 extern void PSL1GHT_keyboardcallback(int scancode, int pressed);
 extern void PSL1GHT_InitPSL1GHTKeymap(_THIS);
 extern void PSL1GHT_PumpKeyboard();

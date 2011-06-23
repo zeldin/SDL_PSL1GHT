@@ -29,9 +29,6 @@
 #include <rsx/rsx.h>
 #include <sysutil/video.h>
 
-/* Hidden "this" pointer for the video functions */
-
-
 /* Debugging
  * 0: No debug messages
  * 1: Video debug messages

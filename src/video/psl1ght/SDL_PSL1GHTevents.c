@@ -85,9 +85,6 @@ static void eventHandle(u64 status, u64 param, void * userdata) {
     }
 }
 
-//SDL_KeyboardEvent PSL1GHT_KeyboardEvent;
-//SDL_Event PSL1GHT_Event;
-
 void
 PSL1GHT_PumpEvents(_THIS)
 {
@@ -204,20 +201,22 @@ void PSL1GHT_PumpKeyboard()
   }
 }
 
-
-void PSL1GHT_InitSysEvent(_THIS)
+void
+PSL1GHT_InitSysEvent(_THIS)
 {
     sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, eventHandle, _this);
     PSL1GHT_InitMouse(_this);
 }
 
-void PSL1GHT_QuitSysEvent(_THIS)
+void
+PSL1GHT_QuitSysEvent(_THIS)
 {
     sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
     PSL1GHT_QuitMouse(_this);
 }
 
-void PSL1GHT_InitPSL1GHTKeymap(_THIS)
+void
+PSL1GHT_InitPSL1GHTKeymap(_THIS)
 {
     int i;
 
@@ -343,7 +342,8 @@ void PSL1GHT_InitPSL1GHTKeymap(_THIS)
     keymap[127] = SDLK_MENU;
 }
 
-void PSL1GHT_keyboardcallback(int scancode, int pressed)
+void
+PSL1GHT_keyboardcallback(int scancode, int pressed)
 {
     SDL_keysym keysym;
 
@@ -356,12 +356,8 @@ void PSL1GHT_keyboardcallback(int scancode, int pressed)
     }
 }
 
-/*void PSL1GHT__mousecallback(int button, int dx, int dy, int u1, int u2, int u3, int u4)
-{
-	//  do nothing--- for now
-}*/
-
-int PSL1GHT_initkeymaps(int fd)
+int
+PSL1GHT_initkeymaps(int fd)
 {
     struct kbentry entry;
     int map, i;
@@ -372,7 +368,6 @@ int PSL1GHT_initkeymaps(int fd)
 		for (i = 0; i < NR_KEYS; ++i) {
 		    entry.kb_table = map;
 		       entry.kb_index = i;
-//	           if (ioctl(fd, KDGKBENT, &entry) == 0) {  //CSNOTE:ioctl needs replaced!
 	           if (1) {  //CSNOTE:ioctl needs replaced!
 				/* The "Enter" key is a special case */
 				if (entry.kb_value == K_ENTER) {
@@ -433,7 +428,8 @@ int PSL1GHT_initkeymaps(int fd)
 
 
 
-static SDL_keysym *TranslateKey(int scancode, SDL_keysym * keysym)
+static SDL_keysym
+*TranslateKey(int scancode, SDL_keysym * keysym)
 {
     /* Set the keysym information */
     keysym->scancode = scancode;

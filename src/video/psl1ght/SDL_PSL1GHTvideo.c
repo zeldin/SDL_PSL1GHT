@@ -92,10 +92,7 @@ PSL1GHT_CreateDevice(int devindex)
     device->VideoQuit = PSL1GHT_VideoQuit;
     device->SetDisplayMode = PSL1GHT_SetDisplayMode;
     device->GetDisplayModes = PSL1GHT_GetDisplayModes;
-
-	//device->InitOSKeymap = PSL1GHT_InitPSL1GHTKeymap;
-
-	device->PumpEvents = PSL1GHT_PumpEvents;
+    device->PumpEvents = PSL1GHT_PumpEvents;
 
     device->free = PSL1GHT_DeleteDevice;
 
@@ -111,7 +108,6 @@ int
 PSL1GHT_VideoInit(_THIS)
 {
     int keyboard;
-
 	SDL_DisplayMode mode;
     SDL_DeviceData *devdata = NULL;
 
@@ -135,7 +131,6 @@ PSL1GHT_VideoInit(_THIS)
     gcmSetFlipMode(GCM_FLIP_VSYNC); // Wait for VSYNC to flip
 
     /* Enable mouse and keyboard support */
-    printf("*****initing keyboard.*****\n");
     keyboard = ioKbInit(4); /*Init the PS3 Keyboard*/
     if (keyboard != 0) {
         SDL_SetError("Unable to initialize keyboard\n");
@@ -148,8 +143,6 @@ PSL1GHT_VideoInit(_THIS)
     if (PSL1GHT_initkeymaps(keyboard) < 0) {
         return (-1);
     }
-    //keyboard_seteventhandler(PSL1GHT_keyboardcallback); // where does keyboard_seteventhandler come from?
-
     /* We're done! */
     return 0;
 }

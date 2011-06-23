@@ -494,8 +494,7 @@ static const char *SDL_scancode_names[SDL_NUM_SCANCODES] = {
 static char *
 SDL_UCS4ToUTF8(Uint32 ch, char *dst)
 {
-    printf("in SDL_UCS4ToUTF8\n");
-	Uint8 *p = (Uint8 *) dst;
+    Uint8 *p = (Uint8 *) dst;
     if (ch <= 0x7F) {
         *p = (Uint8) ch;
         ++dst;
@@ -560,7 +559,7 @@ SDL_ResetKeyboard(void)
 void
 SDL_GetDefaultKeymap(SDLKey * keymap)
 {
-	SDL_memcpy(keymap, SDL_default_keymap, sizeof(SDL_default_keymap));
+    SDL_memcpy(keymap, SDL_default_keymap, sizeof(SDL_default_keymap));
 }
 
 void
@@ -822,7 +821,7 @@ SDL_SendKeyboardText(const char *text)
     SDL_Keyboard *keyboard = &SDL_keyboard;
     int posted;
 
-	/* Don't post text events for unprintable characters */
+    /* Don't post text events for unprintable characters */
     if ((unsigned char)*text < ' ' || *text == 127) {
         return 0;
     }
