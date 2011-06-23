@@ -212,4 +212,3 @@ AudioBootStrap PSL1GHT_AUD_bootstrap = {
 };
 
 /* vi: set ts=4 sw=4 expandtab: */
-

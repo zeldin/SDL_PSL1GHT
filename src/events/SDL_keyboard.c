@@ -537,7 +537,7 @@ SDL_UCS4ToUTF8(Uint32 ch, char *dst)
 int
 SDL_KeyboardInit(void)
 {
-   SDL_Keyboard *keyboard = &SDL_keyboard;
+    SDL_Keyboard *keyboard = &SDL_keyboard;
 
     /* Set the default keymap */
     SDL_memcpy(keyboard->keymap, SDL_default_keymap, sizeof(SDL_default_keymap));
@@ -547,7 +547,7 @@ SDL_KeyboardInit(void)
 void
 SDL_ResetKeyboard(void)
 {
-	SDL_Keyboard *keyboard = &SDL_keyboard;
+    SDL_Keyboard *keyboard = &SDL_keyboard;
     SDL_scancode scancode;
 
     for (scancode = 0; scancode < SDL_NUM_SCANCODES; ++scancode) {
@@ -566,7 +566,7 @@ SDL_GetDefaultKeymap(SDLKey * keymap)
 void
 SDL_SetKeymap(int start, SDLKey * keys, int length)
 {
-	SDL_Keyboard *keyboard = &SDL_keyboard;
+    SDL_Keyboard *keyboard = &SDL_keyboard;
 
     if (start < 0 || start + length > SDL_NUM_SCANCODES) {
         return;
@@ -578,7 +578,7 @@ SDL_SetKeymap(int start, SDLKey * keys, int length)
 void
 SDL_SetScancodeName(SDL_scancode scancode, const char *name)
 {
-	SDL_scancode_names[scancode] = name;
+    SDL_scancode_names[scancode] = name;
 }
 
 SDL_Window *
@@ -625,7 +625,7 @@ SDL_SetKeyboardFocus(SDL_Window * window)
 int
 SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
 {
-	SDL_Keyboard *keyboard = &SDL_keyboard;
+    SDL_Keyboard *keyboard = &SDL_keyboard;
     int posted;
     Uint16 modstate;
     Uint32 type;
@@ -639,7 +639,7 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
            state == SDL_PRESSED ? "pressed" : "released");
 #endif
     if (state == SDL_PRESSED) {
-		modstate = keyboard->modstate;
+        modstate = keyboard->modstate;
         switch (scancode) {
         case SDL_SCANCODE_NUMLOCKCLEAR:
             keyboard->modstate ^= KMOD_NUM;
@@ -675,7 +675,7 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
             keyboard->modstate |= KMOD_MODE;
             break;
         default:
-			break;
+            break;
         }
     } else {
         switch (scancode) {
@@ -718,14 +718,14 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
     /* Figure out what type of event this is */
     switch (state) {
     case SDL_PRESSED:
-		type = SDL_KEYDOWN;
+        type = SDL_KEYDOWN;
         break;
     case SDL_RELEASED:
         type = SDL_KEYUP;
         break;
     default:
         /* Invalid state -- bail */
-		return 0;
+        return 0;
     }
 
     /* Drop events that don't change state */
@@ -743,7 +743,7 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
     /* Post the event, if desired */
     posted = 0;
     if (SDL_GetEventState(type) == SDL_ENABLE) {
-		SDL_Event event;
+        SDL_Event event;
         event.key.type = type;
         event.key.state = state;
         event.key.repeat = repeat;
@@ -754,10 +754,8 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
         event.key.windowID = keyboard->focus ? keyboard->focus->id : 0;
         posted = (SDL_PushEvent(&event) > 0);
     }
-	return (posted);
+    return (posted);
 }
-
-
 
 int 
 PSLIGHT_SendKeyboardKey(Uint8 state, SDL_scancode scancode, Uint16 modstate)
@@ -818,13 +816,13 @@ PSLIGHT_SendKeyboardKey(Uint8 state, SDL_scancode scancode, Uint16 modstate)
 	return (posted);
 }
 
-
 int
 SDL_SendKeyboardText(const char *text)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
     int posted;
-    /* Don't post text events for unprintable characters */
+
+	/* Don't post text events for unprintable characters */
     if ((unsigned char)*text < ' ' || *text == 127) {
         return 0;
     }
@@ -865,14 +863,13 @@ SDL_SendEditingText(const char *text, int start, int length)
 void
 SDL_KeyboardQuit(void)
 {
-	printf("in SDL_KeyboardQuit.\n");
+	/* do nothing */
 }
 
 Uint8 *
 SDL_GetKeyboardState(int *numkeys)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
-
 
     if (numkeys != (int *) 0) {
         *numkeys = SDL_NUM_SCANCODES;
@@ -968,16 +965,5 @@ SDL_GetKeyName(SDLKey key)
         return name;
     }
 }
-
-/*SDL_scancode
-SDL_GetScancodeFromASCII(uint8 ASCII)
-{
-	int x;
-
-	for (x=0; x<SDL_NUM_SCANCODES;x++)
-	{
-		if toascii(
-	}
-*/
 
 /* vi: set ts=4 sw=4 expandtab: */
