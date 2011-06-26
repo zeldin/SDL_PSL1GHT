@@ -166,31 +166,6 @@ void PSL1GHT_PumpKeyboard()
 		{
 			keyboard->modstate = keyboard->modstate & 1<<4;
 		}
-		//not tested
-
-		//end not tested
-
-		/*
-		case SDL_SCANCODE_LCTRL:
-            keyboard->modstate |= KMOD_LCTRL;
-            break;
-        case SDL_SCANCODE_RCTRL:
-            keyboard->modstate |= KMOD_RCTRL;
-            break;
-        case SDL_SCANCODE_LALT:
-            keyboard->modstate |= KMOD_LALT;
-            break;
-        case SDL_SCANCODE_RALT:
-            keyboard->modstate |= KMOD_RALT;
-            break;
-        case SDL_SCANCODE_LGUI:
-            keyboard->modstate |= KMOD_LGUI;
-            break;
-        case SDL_SCANCODE_RGUI:
-            keyboard->modstate |= KMOD_RGUI;
-            break;
-		*/
-
 
 		for (x=0;x<Keys.nb_keycode;x++)
 		{
