@@ -27,6 +27,5 @@ extern void PSL1GHT_PumpEvents(_THIS);
 extern void PSL1GHT_InitSysEvent(_THIS);
 extern void PSL1GHT_QuitSysEvent(_THIS);
 extern int PSL1GHT_initkeymaps(int fd);
-extern void PSL1GHT_InitPSL1GHTKeymap(_THIS);
 extern void PSL1GHT_PumpKeyboard();
 /* vi: set ts=4 sw=4 expandtab: */
