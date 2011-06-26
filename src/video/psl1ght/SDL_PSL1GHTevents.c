@@ -190,8 +190,6 @@ PSL1GHT_QuitSysEvent(_THIS)
     PSL1GHT_QuitMouse(_this);
 }
 
-void
-
 int
 PSL1GHT_initkeymaps(int fd)
 {
