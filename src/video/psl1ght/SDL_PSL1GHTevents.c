@@ -29,7 +29,7 @@
 #include "../../events/SDL_events_c.h"
 #include "../../events/SDL_keyboard_c.h"
 
-#include "../fbcon/SDL_fbkeys.h"
+#include "SDL_PSL1GHTkeys.h"
 #include "SDL_PSL1GHTvideo.h"
 #include "SDL_PSL1GHTevents_c.h"
 #include "SDL_PSL1GHTmouse_c.h"
