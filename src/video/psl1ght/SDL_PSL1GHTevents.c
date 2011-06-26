@@ -318,18 +318,6 @@ PSL1GHT_InitPSL1GHTKeymap(_THIS)
 }
 
 void
-PSL1GHT_keyboardcallback(int scancode, int pressed)
-{
-    SDL_keysym keysym;
-
-    if (pressed) {
-        posted += 65;/*SDL_PrivateKeyboard(SDL_PRESSED,
-                                      TranslateKey(scancode, &keysym));*/
-    } else {
-        posted += 32;/*SDL_PrivateKeyboard(SDL_RELEASED,
-                                      TranslateKey(scancode, &keysym));*/
-    }
-}
 
 int
 PSL1GHT_initkeymaps(int fd)
