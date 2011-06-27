@@ -27,22 +27,7 @@
 #include "SDL_events.h"
 #include "SDL_events_c.h"
 #include "SDL_sysevents.h"
-
-
-/* Global keyboard information */
-
-typedef struct SDL_Keyboard SDL_Keyboard;
-
-struct SDL_Keyboard
-{
-    /* Data common to all keyboards */
-    SDL_Window *focus;
-    Uint16 modstate;
-    Uint8 keystate[SDL_NUM_SCANCODES];
-    SDLKey keymap[SDL_NUM_SCANCODES];
-};
-
-static SDL_Keyboard SDL_keyboard;
+#include "SDL_keyboard_c.h"
 
 static const SDLKey SDL_default_keymap[SDL_NUM_SCANCODES] = {
     0, 0, 0, 0,
@@ -600,7 +585,7 @@ SDL_GetKeyboardFocus(void)
 {
     SDL_Keyboard *keyboard = &SDL_keyboard;
 
-    return keyboard->focus;
+	return keyboard->focus;
 }
 
 void
@@ -772,6 +757,65 @@ SDL_SendKeyboardKey(Uint8 state, SDL_scancode scancode)
     return (posted);
 }
 
+int 
+PSLIGHT_SendKeyboardKey(Uint8 state, SDL_scancode scancode, Uint16 modstate)
+{
+	SDL_Keyboard *keyboard = &SDL_keyboard;
+    int posted;
+    //Uint16 modstate;
+    Uint32 type;
+    Uint8 repeat;
+
+    if (!scancode) {
+        return 0;
+    }
+#if 0
+    printf("The '%s' key has been %s\n", SDL_GetScancodeName(scancode),
+           state == SDL_PRESSED ? "pressed" : "released");
+#endif
+
+	/* Figure out what type of event this is */
+    switch (state) {
+    case SDL_PRESSED:
+		type = SDL_KEYDOWN;
+        break;
+    case SDL_RELEASED:
+        type = SDL_KEYUP;
+        break;
+    default:
+        /* Invalid state -- bail */
+		return 0;
+    }
+
+    /* Drop events that don't change state */
+    repeat = (state && keyboard->keystate[scancode]);
+    if (keyboard->keystate[scancode] == state && !repeat) {
+#if 0
+        printf("Keyboard event didn't change state - dropped!\n");
+#endif
+        return 0;
+    }
+
+    /* Update internal keyboard state */
+	keyboard->keystate[scancode] = state;
+
+    /* Post the event, if desired */
+    posted = 0;
+    if (SDL_GetEventState(type) == SDL_ENABLE) {
+		SDL_Event event;
+        event.key.type = type;
+        event.key.state = state;
+        event.key.repeat = repeat;
+        event.key.keysym.scancode = scancode;
+        event.key.keysym.sym = keyboard->keymap[scancode];
+		event.key.keysym.mod = modstate;
+        event.key.keysym.unicode = 0;
+        event.key.windowID = keyboard->focus ? keyboard->focus->id : 0;
+        posted = (SDL_PushEvent(&event) > 0);
+    }
+	return (posted);
+}
+
 int
 SDL_SendKeyboardText(const char *text)
 {
@@ -819,6 +863,7 @@ SDL_SendEditingText(const char *text, int start, int length)
 void
 SDL_KeyboardQuit(void)
 {
+	/* do nothing */
 }
 
 Uint8 *

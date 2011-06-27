@@ -20,11 +20,12 @@
     slouken@libsdl.org
 */
 #include "SDL_config.h"
-
 #include "SDL_PSL1GHTvideo.h"
+#include "../src/video/psl1ght/kd.h"
 
 extern void PSL1GHT_PumpEvents(_THIS);
 extern void PSL1GHT_InitSysEvent(_THIS);
 extern void PSL1GHT_QuitSysEvent(_THIS);
-
+extern int PSL1GHT_initkeymaps(int fd);
+extern void PSL1GHT_PumpKeyboard();
 /* vi: set ts=4 sw=4 expandtab: */
