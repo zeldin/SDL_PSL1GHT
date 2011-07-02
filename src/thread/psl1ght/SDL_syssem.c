@@ -29,7 +29,6 @@
 
 #include "SDL_thread.h"
 
-
 struct SDL_semaphore
 {
     sys_sem_t id;
