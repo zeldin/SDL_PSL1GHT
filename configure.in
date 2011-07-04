@@ -1471,6 +1471,17 @@ CheckMacGL()
     fi
 }
 
+dnl Check for PSL1GHT OpenGL
+CheckPSL1GHTGL()
+{
+    if test x$enable_video = xyes -a x$enable_video_opengl = xyes; then
+        AC_DEFINE(SDL_VIDEO_OPENGL, 1, [ ])
+        AC_DEFINE(SDL_VIDEO_OPENGL_OSMESA, 1, [ ])
+        AC_DEFINE(SDL_VIDEO_RENDER_OGL, 1, [ ])
+        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lOSMesa"
+    fi
+}
+
 dnl See if we can use the new unified event interface in Linux 2.4
 CheckInputEvents()
 {
@@ -2342,6 +2353,8 @@ AC_HELP_STRING([--enable-render-d3d], [enable the Direct3D render driver [[defau
 		EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lgcm_sys -lrsx -lsysutil -lio -laudio -lrt -llv2"
         CheckPSL1GHTVideo
         #CheckDummyAudio
+	CheckPSL1GHTGL
+
         # Set up files for the thread library
         if test x$enable_threads = xyes; then
             AC_DEFINE(SDL_THREAD_PSL1GHT)
