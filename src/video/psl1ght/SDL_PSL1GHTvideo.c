@@ -93,6 +93,10 @@ PSL1GHT_CreateDevice(int devindex)
     device->GetDisplayModes = PSL1GHT_GetDisplayModes;
     device->PumpEvents = PSL1GHT_PumpEvents;
 
+#if SDL_VIDEO_OPENGL_OSMESA
+    device->GL_CreateContext = PSL1GHT_GL_CreateContext;
+#endif
+
     device->free = PSL1GHT_DeleteDevice;
 
     return device;

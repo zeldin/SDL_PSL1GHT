@@ -29,6 +29,8 @@
 #include <rsx/rsx.h>
 #include <sysutil/video.h>
 
+#include "SDL_PSL1GHTopengl.h"
+
 /* Debugging
  * 0: No debug messages
  * 1: Video debug messages
