@@ -28,10 +28,16 @@
 
 #include <GL/osmesa.h>
 
+static int width, height, currbuf;
+static void *buffer[2];
+
 SDL_GLContext
 PSL1GHT_GL_CreateContext(_THIS, SDL_Window * window)
 {
+    SDL_DeviceData *devdata = _this->driverdata;
     OSMesaContext context;
+    uint32_t offset;
+    int i;
 
     context = OSMesaCreateContext(OSMESA_ARGB, NULL);
 
@@ -40,22 +46,51 @@ PSL1GHT_GL_CreateContext(_THIS, SDL_Window * window)
 	return NULL;
     }
 
+    for (i=0; i<2; i++) {
+        buffer[i] = rsxMemalign (64, 1920*1080*4);
+	if (buffer[i] == NULL) {
+	    SDL_OutOfMemory();
+	    while (i>0)
+	        rsxFree(buffer[--i]);
+	    PSL1GHT_GL_DeleteContext(_this, context);
+	    return NULL;
+	}
+	if (rsxAddressToOffset(buffer[i], &offset) ||
+	    gcmSetDisplayBuffer (i, offset, 1920*4, 1920, 1080)) {
+	    SDL_SetError("Could not set display buffer");
+	    while (i>=0)
+	        rsxFree(buffer[i--]);
+	    PSL1GHT_GL_DeleteContext(_this, context);
+	    return NULL;
+	}
+    }
+
+    width=(window->w > 1920? 1920 : window->w);
+    height=(window->h > 1080? 1080 : window->h);
+
     if (PSL1GHT_GL_MakeCurrent(_this, window, context) < 0) {
+        for (i=0; i<2; i++)
+	    rsxFree(buffer);
         PSL1GHT_GL_DeleteContext(_this, context);
 	return NULL;
     }
 
+    OSMesaPixelStore(OSMESA_ROW_LENGTH, 1920);
+    OSMesaPixelStore(OSMESA_Y_UP, 0);
+
+    gcmResetFlipStatus();
+    gcmSetFlip(devdata->_CommandBuffer, 0);
+    rsxFlushBuffer(devdata->_CommandBuffer);
+    gcmSetWaitFlip(devdata->_CommandBuffer);
+    
     return context;
 }
 
 int
 PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context)
 {
-    int width = 640;
-    int height = 480;
-    static Uint32 buffer[480][640];
-
-    if (OSMesaMakeCurrent(context, buffer, GL_UNSIGNED_BYTE, width, height)
+    if (OSMesaMakeCurrent(context, buffer[currbuf^1],
+			  GL_UNSIGNED_BYTE, width, height)
 	!= GL_TRUE) {
         SDL_SetError("Unable to make GL context current");
 	return -1;
@@ -66,6 +101,14 @@ PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context)
 void
 PSL1GHT_GL_SwapWindow(_THIS, SDL_Window * window)
 {
+    SDL_DeviceData *devdata = _this->driverdata;
+    gcmSetFlip (devdata->_CommandBuffer, currbuf ^= 1);
+    rsxFlushBuffer(devdata->_CommandBuffer);
+    gcmSetWaitFlip(devdata->_CommandBuffer);
+    while (gcmGetFlipStatus() != 0)
+      usleep(200);
+    gcmResetFlipStatus();
+    PSL1GHT_GL_MakeCurrent(_this, window, OSMesaGetCurrentContext());
 }
 
 void
