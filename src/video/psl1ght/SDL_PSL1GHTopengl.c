@@ -26,11 +26,52 @@
 
 #if SDL_VIDEO_OPENGL_OSMESA
 
+#include <GL/osmesa.h>
+
 SDL_GLContext
 PSL1GHT_GL_CreateContext(_THIS, SDL_Window * window)
 {
-    SDL_SetError("PSL1GHT_GL_CreateContext not implemented yet");
-    return NULL;
+    OSMesaContext context;
+
+    context = OSMesaCreateContext(OSMESA_ARGB, NULL);
+
+    if (!context) {
+        SDL_SetError("Could not create GL context");
+	return NULL;
+    }
+
+    if (PSL1GHT_GL_MakeCurrent(_this, window, context) < 0) {
+        PSL1GHT_GL_DeleteContext(_this, context);
+	return NULL;
+    }
+
+    return context;
+}
+
+int
+PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context)
+{
+    int width = 640;
+    int height = 480;
+    static Uint32 buffer[480][640];
+
+    if (OSMesaMakeCurrent(context, buffer, GL_UNSIGNED_BYTE, width, height)
+	!= GL_TRUE) {
+        SDL_SetError("Unable to make GL context current");
+	return -1;
+    }
+    return 0;
+}
+
+void
+PSL1GHT_GL_SwapWindow(_THIS, SDL_Window * window)
+{
+}
+
+void
+PSL1GHT_GL_DeleteContext(_THIS, SDL_GLContext context)
+{
+    OSMesaDestroyContext(context);
 }
 
 #endif /* SDL_VIDEO_OPENGL_OSMESA */

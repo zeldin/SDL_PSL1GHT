@@ -29,6 +29,10 @@
 
 /* OpenGL functions */
 extern SDL_GLContext PSL1GHT_GL_CreateContext(_THIS, SDL_Window * window);
+extern int PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window,
+				  SDL_GLContext context);
+extern void PSL1GHT_GL_SwapWindow(_THIS, SDL_Window * window);
+extern void PSL1GHT_GL_DeleteContext(_THIS, SDL_GLContext context);
 
 #endif /* SDL_VIDEO_OPENGL_OSMESA */
 

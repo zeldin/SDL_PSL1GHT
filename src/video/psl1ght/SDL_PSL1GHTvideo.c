@@ -95,6 +95,9 @@ PSL1GHT_CreateDevice(int devindex)
 
 #if SDL_VIDEO_OPENGL_OSMESA
     device->GL_CreateContext = PSL1GHT_GL_CreateContext;
+    device->GL_MakeCurrent = PSL1GHT_GL_MakeCurrent;
+    device->GL_SwapWindow = PSL1GHT_GL_SwapWindow;
+    device->GL_DeleteContext = PSL1GHT_GL_DeleteContext;
 #endif
 
     device->free = PSL1GHT_DeleteDevice;
