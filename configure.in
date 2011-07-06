@@ -1478,7 +1478,7 @@ CheckPSL1GHTGL()
         AC_DEFINE(SDL_VIDEO_OPENGL, 1, [ ])
         AC_DEFINE(SDL_VIDEO_OPENGL_OSMESA, 1, [ ])
         AC_DEFINE(SDL_VIDEO_RENDER_OGL, 1, [ ])
-        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lOSMesa"
+        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lOSMesa -lstdc++ -lm"
     fi
 }
 
