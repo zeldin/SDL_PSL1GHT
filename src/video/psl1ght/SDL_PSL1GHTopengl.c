@@ -102,6 +102,7 @@ void
 PSL1GHT_GL_SwapWindow(_THIS, SDL_Window * window)
 {
     SDL_DeviceData *devdata = _this->driverdata;
+    glFinish();
     gcmSetFlip (devdata->_CommandBuffer, currbuf ^= 1);
     rsxFlushBuffer(devdata->_CommandBuffer);
     gcmSetWaitFlip(devdata->_CommandBuffer);
