@@ -93,11 +93,14 @@ PSL1GHT_CreateDevice(int devindex)
     device->GetDisplayModes = PSL1GHT_GetDisplayModes;
     device->PumpEvents = PSL1GHT_PumpEvents;
 
-#if SDL_VIDEO_OPENGL_OSMESA
+#if SDL_VIDEO_OPENGL
     device->GL_CreateContext = PSL1GHT_GL_CreateContext;
     device->GL_MakeCurrent = PSL1GHT_GL_MakeCurrent;
     device->GL_SwapWindow = PSL1GHT_GL_SwapWindow;
     device->GL_DeleteContext = PSL1GHT_GL_DeleteContext;
+
+    device->CreateWindow = PSL1GHT_GL_CreateWindow;
+    device->DestroyWindow = PSL1GHT_GL_DestroyWindow;
 #endif
 
     device->free = PSL1GHT_DeleteDevice;
@@ -128,6 +131,9 @@ PSL1GHT_VideoInit(_THIS)
 
     initializeGPU(devdata);
     PSL1GHT_InitModes(_this);
+#ifdef SDL_VIDEO_OPENGL
+    PSL1GHT_GL_Initialize(_this);
+#endif
 
     gcmSetFlipMode(GCM_FLIP_VSYNC); // Wait for VSYNC to flip
 
@@ -139,6 +145,9 @@ void
 PSL1GHT_VideoQuit(_THIS)
 {
     deprintf (1, "PSL1GHT_VideoQuit()\n");
+#ifdef SDL_VIDEO_OPENGL
+    PSL1GHT_GL_Shutdown(_this);
+#endif
     PSL1GHT_QuitModes(_this);
     PSL1GHT_QuitSysEvent(_this);
     SDL_free( _this->driverdata);

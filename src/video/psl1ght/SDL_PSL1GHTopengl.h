@@ -23,18 +23,22 @@
 #ifndef _SDL_PSL1GHTopengl_h
 #define _SDL_PSL1GHTopengl_h
 
-#if SDL_VIDEO_OPENGL_OSMESA
+#if SDL_VIDEO_OPENGL
 #include "SDL_opengl.h"
 #include <GL/gl.h>
 
 /* OpenGL functions */
+extern int PSL1GHT_GL_Initialize(_THIS);
+extern void PSL1GHT_GL_Shutdown(_THIS);
+extern int PSL1GHT_GL_CreateWindow(_THIS, SDL_Window * window);
+extern void PSL1GHT_GL_DestroyWindow(_THIS, SDL_Window * window);
 extern SDL_GLContext PSL1GHT_GL_CreateContext(_THIS, SDL_Window * window);
 extern int PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window,
 				  SDL_GLContext context);
 extern void PSL1GHT_GL_SwapWindow(_THIS, SDL_Window * window);
 extern void PSL1GHT_GL_DeleteContext(_THIS, SDL_GLContext context);
 
-#endif /* SDL_VIDEO_OPENGL_OSMESA */
+#endif /* SDL_VIDEO_OPENGL */
 
 #endif /* _SDL_PSL1GHTopengl_h */
 
