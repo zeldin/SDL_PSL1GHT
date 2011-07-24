@@ -195,8 +195,13 @@ int
 PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context)
 {
     struct SDL_GLDriverData *gl = _this->gl_data;
-    struct SDL_GLWindowData *windata = window->driverdata;
-    if (eglMakeCurrent(gl->d, windata->surf, windata->surf, context)
+    EGLSurface surf = EGL_NO_SURFACE;
+    if (window) {
+      struct SDL_GLWindowData *windata = window->driverdata;
+      if (windata && windata->surf)
+	surf = windata->surf;
+    }
+    if (eglMakeCurrent(gl->d, surf, surf, context)
 	!= EGL_TRUE) {
         SDL_SetError("Unable to make GL context current");
 	return -1;
