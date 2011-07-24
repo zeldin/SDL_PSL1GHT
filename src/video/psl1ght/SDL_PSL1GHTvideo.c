@@ -101,6 +101,7 @@ PSL1GHT_CreateDevice(int devindex)
 
     device->CreateWindow = PSL1GHT_GL_CreateWindow;
     device->DestroyWindow = PSL1GHT_GL_DestroyWindow;
+    device->SetWindowFullscreen = PSL1GHT_GL_SetWindowFullscreen;
 #endif
 
     device->free = PSL1GHT_DeleteDevice;

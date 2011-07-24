@@ -103,6 +103,73 @@ PSL1GHT_GL_Shutdown(_THIS)
 }
 
 
+static int PSL1GHT_GL_CreateWindowSurface(_THIS, struct SDL_Window *window,
+					  struct SDL_GLWindowData *windata)
+{
+
+    struct SDL_GLDriverData *gl = _this->gl_data;
+    SDL_VideoDisplay *display = SDL_GetDisplayForWindow(window);
+    SDL_DisplayMode *displayMode = &display->current_mode;
+    EGLint w, h, bestw, besth;
+    EGLModeMESA mode, modes[128];
+    EGLint count, i;
+    EGLint modeAttribs[] = {
+      EGL_WIDTH, displayMode->w,
+      EGL_HEIGHT, displayMode->h,
+      EGL_NONE
+    };
+    if (!eglChooseModeMESA(gl->d, gl->screen, modeAttribs, modes, 128, &count)
+	|| count < 1) {
+        SDL_SetError("Unable to choose GL mode");
+	return -1;
+    }
+    mode = modes[0];
+    eglGetModeAttribMESA(gl->d, mode, EGL_WIDTH, &bestw);
+    eglGetModeAttribMESA(gl->d, mode, EGL_HEIGHT, &besth);
+    for (i=1; i<count; i++) {
+      eglGetModeAttribMESA(gl->d, modes[i], EGL_WIDTH, &w);
+      eglGetModeAttribMESA(gl->d, modes[i], EGL_HEIGHT, &h);
+      if (w <= bestw && h <= besth &&
+	  (w < bestw || h < besth)) {
+	bestw = w;
+	besth = h;
+	mode = modes[i];
+      }
+    }
+    w = bestw;
+    h = besth;
+    if (w < window->w) w = window->w;
+    if (h < window->h) h = window->h;
+    EGLint screenAttribs[] = {
+      EGL_WIDTH, w,
+      EGL_HEIGHT, h,
+      EGL_NONE
+    };
+    if ((windata->surf = eglCreateScreenSurfaceMESA(gl->d, gl->config,
+						    screenAttribs))
+	== EGL_NO_SURFACE) {
+      SDL_SetError("Unable to create GL surface");
+      return -1;
+    }
+    if (!eglShowScreenSurfaceMESA(gl->d, gl->screen, windata->surf, mode)) {
+      SDL_SetError("Unable to display GL surface");
+      return -1;
+    }
+
+    return 0;
+}
+
+static void PSL1GHT_GL_DestroyWindowSurface(_THIS, struct SDL_GLWindowData *windata)
+{
+    if (windata->surf != EGL_NO_SURFACE) {
+      if (eglGetCurrentSurface(EGL_DRAW) == windata->surf)
+	eglMakeCurrent(_this->gl_data->d, EGL_NO_SURFACE, EGL_NO_SURFACE,
+		       EGL_NO_CONTEXT);
+      eglDestroySurface(_this->gl_data->d, windata->surf);
+      windata->surf = EGL_NO_SURFACE;
+    }
+}
+
 extern int PSL1GHT_GL_CreateWindow(_THIS, SDL_Window * window)
 {
     if(!(window->flags & SDL_WINDOW_OPENGL))
@@ -117,42 +184,7 @@ extern int PSL1GHT_GL_CreateWindow(_THIS, SDL_Window * window)
     }
     window->driverdata = windata;
 
-    struct SDL_GLDriverData *gl = _this->gl_data;
-    SDL_VideoDisplay *display = SDL_GetDisplayForWindow(window);
-    SDL_DisplayMode *displayMode = &display->current_mode;
-    EGLModeMESA mode;
-    EGLint count;
-    EGLint modeAttribs[] = {
-      EGL_WIDTH, displayMode->w,
-      EGL_HEIGHT, displayMode->h,
-      EGL_NONE
-    };
-    if (!eglChooseModeMESA(gl->d, gl->screen, modeAttribs, &mode, 1, &count) ||
-	count != 1) {
-        SDL_SetError("Unable to choose GL mode");
-	return -1;
-    }
-    EGLint w, h;
-    eglGetModeAttribMESA(gl->d, mode, EGL_WIDTH, &w);
-    eglGetModeAttribMESA(gl->d, mode, EGL_HEIGHT, &h);
-    if (w < window->w) w = window->w;
-    if (h < window->h) h = window->h;
-    EGLint screenAttribs[] = {
-      EGL_WIDTH, w,
-      EGL_HEIGHT, h,
-      EGL_NONE
-    };
-    if (!(windata->surf = eglCreateScreenSurfaceMESA(gl->d, gl->config,
-						screenAttribs))) {
-      SDL_SetError("Unable to create GL surface");
-      return -1;
-    }
-    if (!eglShowScreenSurfaceMESA(gl->d, gl->screen, windata->surf, mode)) {
-      SDL_SetError("Unable to display GL surface");
-      return -1;
-    }
-
-    return 0;
+    return PSL1GHT_GL_CreateWindowSurface(_this, window, windata);
 }
 
 extern void PSL1GHT_GL_DestroyWindow(_THIS, SDL_Window * window)
@@ -163,11 +195,30 @@ extern void PSL1GHT_GL_DestroyWindow(_THIS, SDL_Window * window)
        (windata = window->driverdata) == NULL)
       return;
 
-    if (windata->surf)
-      eglDestroySurface(_this->gl_data->d, windata->surf);
-    
+    PSL1GHT_GL_DestroyWindowSurface(_this, windata);
+
     SDL_free(windata);
     window->driverdata = NULL;
+}
+
+extern void PSL1GHT_GL_SetWindowFullscreen(_THIS, SDL_Window * window, SDL_VideoDisplay * display, SDL_bool fullscreen)
+{
+    EGLContext oldContext = EGL_NO_CONTEXT;
+    struct SDL_GLWindowData *windata;
+
+    if(!(window->flags & SDL_WINDOW_OPENGL) ||
+       (windata = window->driverdata) == NULL)
+      return;
+
+    if (windata->surf != EGL_NO_SURFACE &&
+	windata->surf == eglGetCurrentSurface(EGL_DRAW))
+      oldContext = eglGetCurrentContext();
+
+    PSL1GHT_GL_DestroyWindowSurface(_this, windata);
+    PSL1GHT_GL_CreateWindowSurface(_this, window, windata);
+
+    if (oldContext != EGL_NO_CONTEXT)
+      PSL1GHT_GL_MakeCurrent(_this, window, oldContext);
 }
 
 SDL_GLContext
@@ -198,7 +249,7 @@ PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context)
     EGLSurface surf = EGL_NO_SURFACE;
     if (window) {
       struct SDL_GLWindowData *windata = window->driverdata;
-      if (windata && windata->surf)
+      if (windata && windata->surf != EGL_NO_SURFACE)
 	surf = windata->surf;
     }
     if (eglMakeCurrent(gl->d, surf, surf, context)
@@ -221,6 +272,8 @@ void
 PSL1GHT_GL_DeleteContext(_THIS, SDL_GLContext context)
 {
     struct SDL_GLDriverData *gl = _this->gl_data;
+    if (eglGetCurrentContext() == context)
+      eglMakeCurrent(gl->d, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(gl->d, context);
 }
 

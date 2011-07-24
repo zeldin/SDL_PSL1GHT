@@ -32,6 +32,8 @@ extern int PSL1GHT_GL_Initialize(_THIS);
 extern void PSL1GHT_GL_Shutdown(_THIS);
 extern int PSL1GHT_GL_CreateWindow(_THIS, SDL_Window * window);
 extern void PSL1GHT_GL_DestroyWindow(_THIS, SDL_Window * window);
+extern void PSL1GHT_GL_SetWindowFullscreen(_THIS, SDL_Window * window, SDL_VideoDisplay * display, SDL_bool fullscreen);
+
 extern SDL_GLContext PSL1GHT_GL_CreateContext(_THIS, SDL_Window * window);
 extern int PSL1GHT_GL_MakeCurrent(_THIS, SDL_Window * window,
 				  SDL_GLContext context);
